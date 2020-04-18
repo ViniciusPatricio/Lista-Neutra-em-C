@@ -13,6 +13,8 @@ struct Lista_Encadeada{
     TELE *inicio;
 };
 
+// *********************** FUNÇÕES DE CRIAÇÃO  *********************** //
+
 TELE *criarElementoLista(void *carga){
     TELE *elemento_lista=malloc(sizeof(TELE));
     
@@ -31,6 +33,8 @@ TLista *criarListaEncadeada(){
     
     return lista;
 }
+
+// *********************** FUNÇÕES DE INSERÇÃO  *********************** //
 
 void inserirFim(TLista *lista, void *carga){
     TELE *carga_util=criarElementoLista(carga);
@@ -57,6 +61,30 @@ void inserirInicio(TLista *lista, void *carga){
     lista->qtde++;
 }
 
+// *********************** FUNÇÕES DE REMOÇÂO  *********************** //
+
+typedef void (*TDestroyMedida)(void*); // assinatura de uma função
+
+void removerInicio(TLista *lista,TDestroyMedida destroy){ // removerInicio recebe uma lista e um função que remove uma medida genérica
+    TELE *primeiro=lista->inicio;
+
+    if(primeiro==NULL){
+        printf("Não há elementos na lista\n");
+    }else{
+        if(lista->inicio==lista->fim){  // único elemento na lista;
+            lista->fim=NULL; lista->inicio=NULL;
+        }else{
+            lista->inicio=primeiro->prox;
+        }
+        void *carga=primeiro->carga_util;
+        free(primeiro);
+        lista->qtde--;
+        
+    }
+}
+
+// *********************** MEDIDA CRIADA PARA EXEMPLO  *********************** //
+
 typedef struct medida TMedida;
 struct medida{
     int num;
@@ -72,6 +100,11 @@ TMedida *criarMedida(int num){
 void imprimirMedida(void *medida){
     TMedida *med=medida;
     printf("%d ",med->num);
+}
+
+void destruirTMedida(void *medida){
+    TMedida *med=medida;
+    free(med);
 }
 
 int main(){
@@ -92,6 +125,7 @@ int main(){
     }
     TELE *cam1=lista1->inicio;
     TELE *cam2=lista2->inicio;
+    
    
     printf("Inserindo no inicio: ");
     while(cam1!=NULL){
@@ -99,9 +133,30 @@ int main(){
         cam1=cam1->prox;
     }
     
-    printf("\ninserir no fim:");
+    printf("\ninserir no fim: ");
     while(cam2!=NULL){
         imprimirMedida(cam2->carga_util);
         cam2=cam2->prox;
     }
+
+    removerInicio(lista1,destruirTMedida);
+    removerInicio(lista2,destruirTMedida);
+
+    cam1=lista1->inicio;
+    cam2=lista2->inicio;
+
+    printf("\nREMOVENDO OS PRIMEIROS ELEMENTOS\n");
+    printf("Inserindo no inicio: ");
+    while(cam1!=NULL){
+        imprimirMedida(cam1->carga_util);
+        cam1=cam1->prox;
+    }
+
+   
+    printf("\ninserir no fim: ");
+    while(cam2!=NULL){
+        imprimirMedida(cam2->carga_util);
+        cam2=cam2->prox;
+    }
+  
 }
