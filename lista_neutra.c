@@ -112,6 +112,23 @@ void removerInicio(TLista *lista,TDestroyMedida destroy){ // removerInicio receb
         lista->qtde--;  
     }
 }
+// *********************** FUNÇÕES DIVERSAS  *********************** //
+
+int quantidadeLista(TLista *lista){
+    return lista->qtde;
+}
+
+typedef void (*TImprimirElemento)(void*);
+
+void *imprimirLista(TLista *lista,TImprimirElemento imprimir){
+    TELE *caminhador=lista->inicio;
+
+    while(caminhador!=NULL){
+        imprimir(caminhador->carga_util);
+        caminhador=caminhador->prox;
+    }
+
+}
 
 // *********************** MEDIDA CRIADA PARA EXEMPLO  *********************** //
 
@@ -153,31 +170,7 @@ int main(){
     }
 
     TELE *cam2=lista2->inicio;
- 
+    
     printf("Inserindo no fim: ");
-    while(cam2!=NULL){
-        imprimirMedida(cam2->carga_util);
-        cam2=cam2->prox;
-    }
-
-    printf("\ndigite o novo elemento: ");
-    scanf("%d",&num);
-    
-    int pos;
-    printf("Digite posicao: ");
-    scanf("%d",&pos);
-    
-    
-    TMedida *medida=criarMedida(num);
-    inserirPosicao(lista2,medida,pos);
-     
-
-    cam2=lista2->inicio;
- 
-    printf("\nInserindo no fim: ");
-    while(cam2!=NULL){
-        imprimirMedida(cam2->carga_util);
-        cam2=cam2->prox;
-    }
-
+    imprimirLista(lista2,imprimirMedida);
 }
