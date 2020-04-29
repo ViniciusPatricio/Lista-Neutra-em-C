@@ -96,21 +96,73 @@ void inserirPosicao(TLista *lista, void *carga, int pos){
 typedef void (*TDestroyMedida)(void*); // assinatura de uma função
 
 void removerInicio(TLista *lista,TDestroyMedida destroy){ // removerInicio recebe uma lista e um função que remove uma medida genérica
-    TELE *primeiro=lista->inicio;
-
-    if(primeiro==NULL){
-        printf("Nao ha elementos na lista\n");
-    }else{
-        if(lista->inicio==lista->fim){  // único elemento na lista;
-            lista->fim=NULL; lista->inicio=NULL;
-        }else{
-            lista->inicio=primeiro->prox;
-        }
-        void *carga=primeiro->carga_util;
-        free(primeiro);
+    TELE *caminhador=lista->inicio;
+    void *carga=caminhador->carga_util;
+    if(lista->inicio==NULL){
+        printf("Lista vazia\n");
+    }else if(lista->inicio==lista->fim){
+        lista->fim=lista->inicio=NULL;
         destroy(carga);
-        lista->qtde--;  
+        free(caminhador);
+        lista->qtde=0;
+    }else{
+        TELE *caminhador_prox=caminhador->prox;
+        destroy(carga);
+        free(caminhador);
+        lista->inicio=caminhador_prox;
+        lista->qtde--;
     }
+}
+
+void removerFinal(TLista *lista, TDestroyMedida destroy){
+    TELE *caminhador=lista->inicio;
+    void *carga=lista->fim;
+    
+    if(lista->inicio==NULL){
+        printf("Lista vazia\n");
+    }else if(lista->inicio==lista->fim){
+        lista->inicio=lista->fim=NULL;
+        destroy(carga);
+        free(caminhador);
+        lista->qtde=0;
+    }else{
+        while(caminhador->prox!=lista->fim){
+            caminhador=caminhador->prox;
+            lista->qtde--;
+         }
+
+        destroy(carga);
+        free(lista->fim);
+        lista->fim=caminhador;
+        caminhador->prox=NULL;
+        lista->qtde--;
+        
+    }    
+}
+void removerPosicao(TLista *lista,int pos,TDestroyMedida destroy){
+   if(pos==1){
+       removerInicio(lista,destroy);
+   } else if(pos==lista->qtde){
+       removerFinal(lista,destroy);
+   }else if (pos>1 && pos<lista->qtde){
+       int i=1;
+       TELE *caminhador1=NULL;
+       TELE *caminhador2=lista->inicio;
+
+       while (i!=pos){
+           caminhador1=caminhador2;
+           caminhador2=caminhador2->prox;
+           i++;
+       }
+       caminhador1->prox=caminhador2->prox;
+       destroy(caminhador2->carga_util);
+       free(caminhador2);
+       lista->qtde--;
+
+   }else{
+       printf("Posicao Invalida\n");
+   }
+
 }
 // *********************** FUNÇÕES DIVERSAS  *********************** //
 
@@ -168,9 +220,9 @@ int main(){
 
        inserirFim(lista2,medida);
     }
-
+    scanf("%d",&num);
     TELE *cam2=lista2->inicio;
-    
+    removerPosicao(lista2,num,destruirTMedida);
     printf("Inserindo no fim: ");
     imprimirLista(lista2,imprimirMedida);
 }
