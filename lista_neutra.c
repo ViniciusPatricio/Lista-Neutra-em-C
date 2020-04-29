@@ -61,6 +61,36 @@ void inserirInicio(TLista *lista, void *carga){
     lista->qtde++;
 }
 
+void inserirPosicao(TLista *lista, void *carga, int pos){
+   
+   if(pos>=1 && pos<=lista->qtde+1){
+        int i=1;
+        TELE *caminhador1=NULL;
+        TELE *caminhador2=lista->inicio;
+
+        while(i!=pos){
+            caminhador1=caminhador2;
+            caminhador2=caminhador2->prox;
+            i++;
+        }
+
+        if(caminhador1==NULL){
+            inserirInicio(lista,carga);
+        }else if(caminhador2==lista->fim+1){
+            inserirFim(lista,carga);
+        }else{
+            TELE *carga_util=criarElementoLista(carga);
+            caminhador1->prox=carga_util;
+            carga_util->prox=caminhador2;
+        }
+
+        lista->qtde++;
+
+   }else{
+       printf("Posicao Invalida\n");
+   }
+}
+
 // *********************** FUNÇÕES DE REMOÇÂO  *********************** //
 
 typedef void (*TDestroyMedida)(void*); // assinatura de uma função
@@ -69,7 +99,7 @@ void removerInicio(TLista *lista,TDestroyMedida destroy){ // removerInicio receb
     TELE *primeiro=lista->inicio;
 
     if(primeiro==NULL){
-        printf("Não há elementos na lista\n");
+        printf("Nao ha elementos na lista\n");
     }else{
         if(lista->inicio==lista->fim){  // único elemento na lista;
             lista->fim=NULL; lista->inicio=NULL;
@@ -78,8 +108,8 @@ void removerInicio(TLista *lista,TDestroyMedida destroy){ // removerInicio receb
         }
         void *carga=primeiro->carga_util;
         free(primeiro);
-        lista->qtde--;
-        
+        destroy(carga);
+        lista->qtde--;  
     }
 }
 
@@ -106,12 +136,11 @@ void destruirTMedida(void *medida){
     TMedida *med=medida;
     free(med);
 }
-
+// ***************************** Main  ******************************* //
 int main(){
 
-    TLista *lista1=criarListaEncadeada();
     TLista *lista2=criarListaEncadeada();
-
+    
     int i,num,tam;
 
     scanf("%d",&tam);
@@ -119,44 +148,36 @@ int main(){
     for(i=0;i<tam;i++){
         scanf("%d",&num);
        TMedida *medida=criarMedida(num);
-      
-       inserirInicio(lista1,medida);
+
        inserirFim(lista2,medida);
     }
-    TELE *cam1=lista1->inicio;
+
     TELE *cam2=lista2->inicio;
-    
-   
-    printf("Inserindo no inicio: ");
-    while(cam1!=NULL){
-        imprimirMedida(cam1->carga_util);
-        cam1=cam1->prox;
-    }
-    
-    printf("\ninserir no fim: ");
+ 
+    printf("Inserindo no fim: ");
     while(cam2!=NULL){
         imprimirMedida(cam2->carga_util);
         cam2=cam2->prox;
     }
 
-    removerInicio(lista1,destruirTMedida);
-    removerInicio(lista2,destruirTMedida);
+    printf("\ndigite o novo elemento: ");
+    scanf("%d",&num);
+    
+    int pos;
+    printf("Digite posicao: ");
+    scanf("%d",&pos);
+    
+    
+    TMedida *medida=criarMedida(num);
+    inserirPosicao(lista2,medida,pos);
+     
 
-    cam1=lista1->inicio;
     cam2=lista2->inicio;
-
-    printf("\nREMOVENDO OS PRIMEIROS ELEMENTOS\n");
-    printf("Inserindo no inicio: ");
-    while(cam1!=NULL){
-        imprimirMedida(cam1->carga_util);
-        cam1=cam1->prox;
-    }
-
-   
-    printf("\ninserir no fim: ");
+ 
+    printf("\nInserindo no fim: ");
     while(cam2!=NULL){
         imprimirMedida(cam2->carga_util);
         cam2=cam2->prox;
     }
-  
+
 }
