@@ -36,6 +36,8 @@ TLista *criarListaEncadeada(){
 
 // *********************** FUNÇÕES DE INSERÇÃO  *********************** //
 
+typedef int (*TCompara)(void*,void*);
+
 void inserirFim(TLista *lista, void *carga){
     TELE *carga_util=criarElementoLista(carga);
 
@@ -89,6 +91,30 @@ void inserirPosicao(TLista *lista, void *carga, int pos){
    }else{
        printf("Posicao Invalida\n");
    }
+}
+
+void inserirOrdenado(TLista *lista,void* carga,TCompara compare){
+    TELE *novo=criarElementoLista(carga);
+    if(lista->inicio==NULL){
+        inserirInicio(lista,carga);
+    }else{
+        TELE *caminhador1=lista->inicio;  // caminhador posterior
+        TELE *caminhador2=NULL;           // caminhador anterior     
+        while(caminhador1!=NULL && compare(novo->carga_util,caminhador1->carga_util)==1){   // ( -1 = valor da esquerda é menor) ( 0 = valor da esquerda é igual da direita) 
+            caminhador2=caminhador1;
+            caminhador1=caminhador1->prox;                                                                   // (1 = valor da esquerda é maior)
+        }
+
+        if(caminhador2==NULL){
+            inserirInicio(lista,carga);
+        }else if(caminhador1==NULL){
+            inserirFim(lista,carga);
+        }else{
+            novo->prox=caminhador2->prox;
+            caminhador2->prox=novo;
+            lista->qtde++;
+        }
+    }
 }
 
 // *********************** FUNÇÕES DE REMOÇÂO  *********************** //
@@ -162,8 +188,53 @@ void removerPosicao(TLista *lista,int pos,TDestroyMedida destroy){
    }else{
        printf("Posicao Invalida\n");
    }
-
 }
+// *********************** FUNÇÕES DE BUSCA  *********************** //
+
+
+
+void *primeiroLista(TLista *lista){
+    return lista->inicio->carga_util;
+}
+
+void *ultimoLista(TLista *lista){
+    return lista->fim->carga_util;
+}
+
+void *buscaPosicao(TLista *lista,int pos){
+    if(pos==1){
+        primeiroLista(lista);
+    }else if(pos==lista->qtde){
+        ultimoLista(lista);
+    }else if(pos>1 && pos<lista->qtde){
+        int i=1;
+        TELE *caminhador=lista->inicio;
+
+        while(i!=pos){
+            caminhador=caminhador->prox;
+            i++;
+        }
+        return caminhador->carga_util;
+
+    }else{
+        printf("Posicao invalida\n");
+    }
+}
+
+// Vai ser utilizado typedef int (*TCompara)(void*,void*);
+
+void *buscaELemento(TLista *lista,void *buscado,TCompara compare){
+    TELE *caminhador=lista->inicio;
+    while(caminhador!=NULL && compare(caminhador->carga_util,buscado)!=0){
+        caminhador=caminhador->prox;
+    }
+    if(caminhador==NULL){
+        return NULL;
+    }else{
+        return caminhador->carga_util;
+    }
+}
+
 // *********************** FUNÇÕES DIVERSAS  *********************** //
 
 int quantidadeLista(TLista *lista){
@@ -205,10 +276,20 @@ void destruirTMedida(void *medida){
     TMedida *med=medida;
     free(med);
 }
+int compararMedida(void *medida1, void *medida2){
+    TMedida *med1=medida1; TMedida *med2=medida2;
+    if(med1->num == med2->num){
+        return 0;
+    }if(med1->num < med2->num){
+        return -1;
+    }else if(med1->num > med2->num){
+        return 1;
+    }
+}
 // ***************************** Main  ******************************* //
 int main(){
 
-    TLista *lista2=criarListaEncadeada();
+    TLista *lista=criarListaEncadeada();
     
     int i,num,tam;
 
@@ -217,12 +298,12 @@ int main(){
     for(i=0;i<tam;i++){
         scanf("%d",&num);
        TMedida *medida=criarMedida(num);
-
-       inserirFim(lista2,medida);
+        inserirOrdenado(lista,medida,compararMedida);
+        
     }
-    scanf("%d",&num);
-    TELE *cam2=lista2->inicio;
-    removerPosicao(lista2,num,destruirTMedida);
-    printf("Inserindo no fim: ");
-    imprimirLista(lista2,imprimirMedida);
+    imprimirLista(lista,imprimirMedida);
+    int pos;
+    printf("\n elemento a ser acessodo: ");
+    
+    
 }
