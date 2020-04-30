@@ -234,6 +234,13 @@ void *buscaELemento(TLista *lista,void *buscado,TCompara compare){
         return caminhador->carga_util;
     }
 }
+void verificaElemento(TLista *lista,void *buscado,TCompara compare){
+    if(buscaELemento(lista,buscado,compare)!=NULL){
+        printf("Elemento esta na lista");
+    }else{
+        printf("Elemento nao esta na lista");
+    }
+}
 
 // *********************** FUNÇÕES DIVERSAS  *********************** //
 
@@ -303,7 +310,9 @@ int main(){
     }
     imprimirLista(lista,imprimirMedida);
     int pos;
-    printf("\n elemento a ser acessodo: ");
-    
-    
+    printf("\nelemento a ser acessodo: ");
+    scanf("%d",&pos);
+    TMedida *med=criarMedida(pos);
+    verificaElemento(lista,med,compararMedida);
+     
 }
